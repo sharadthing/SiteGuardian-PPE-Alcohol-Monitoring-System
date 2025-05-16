@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Site Guardian - Live Feed</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    .sidebar-link {
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+    }
+    
+    .sidebar-link:hover {
+      background-color: rgba(5, 150, 105, 0.1);
+      border-left: 3px solid #059669;
+    }
+    
+    .sidebar-link.active {
+      background-color: rgba(5, 150, 105, 0.1);
+      border-left: 3px solid #059669;
+      font-weight: 500;
+    }
+    
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 aspect ratio */
+      height: 0;
+      overflow: hidden;
+    }
+    
+    .video-container video, .video-container img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .sensor-card {
+      transition: all 0.3s ease;
+      background: linear-gradient(145deg, #f0fdf4, #dcfce7);
+    }
+    
+    .sensor-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(5, 150, 105, 0.1);
+    }
+    
+    .ppe-status {
+      transition: all 0.3s ease;
+    }
+    
+    .ppe-status.compliant {
+      background-color: #dcfce7;
+      border-color: #22c55e;
+    }
+    
+    .ppe-status.non-compliant {
+      background-color: #fee2e2;
+      border-color: #ef4444;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+   <!-- Mobile Sidebar Overlay -->
+  <div id="mobileSidebar" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden transition-opacity duration-300">
+    <div class="bg-white w-64 h-full p-6 shadow-lg transform transition-transform duration-300">
+      <button onclick="toggleSidebar()" class="text-right block mb-6 text-emerald-600 hover:text-emerald-800 font-bold transition-colors">✕ Close</button>
+      <div class="flex flex-col items-center">
+        <div class="relative">
+          <img src="https://img.icons8.com/ios-filled/100/user-male-circle.png" alt="Profile" class="w-20 h-20 rounded-full mb-4 border-4 border-emerald-100" />
+          <div class="absolute bottom-0 right-0 w-5 h-5 bg-emerald-500 rounded-full border-2 border-white"></div>
+        </div>
+        <h2 class="text-xl font-bold text-emerald-800">Sharad Thing</h2>
+        <p class="text-sm text-emerald-600">Admin Panel</p>
+      </div>
+      <div class="mt-8 space-y-2">
+        <a href="https://site-guardian-api-h7dahee9e3cbc4bc.uksouth-01.azurewebsites.net" class="block py-2 px-4 sidebar-link active text-emerald-700">Dashboard</a>
+        <a href="../static/workers.html" class="block py-2 px-4 sidebar-link text-emerald-700">Manage Workers</a>
+        <a href="../static/records.html" class="block py-2 px-4 sidebar-link text-emerald-700">Records</a>
+        <a href="../static/Reports.html" class="block py-2 px-4 sidebar-link text-emerald-700">Reports</a>
+        <a href="../static/live-feed.html" class="block py-2 px-4 sidebar-link text-emerald-700">Live-feed</a>
+        <a href="../static/setting.html" class="block py-2 px-4 sidebar-link text-emerald-700">Settings</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-col md:flex-row h-screen overflow-y-auto">
+    <!-- Sidebar (Desktop) -->
+    <aside class="hidden md:flex flex-col w-64 bg-white p-6 shadow-lg">
+      <div class="flex flex-col items-center">
+        <div class="relative">
+          <img src="https://img.icons8.com/ios-filled/100/user-male-circle.png" alt="Profile" class="w-20 h-20 rounded-full mb-4 border-4 border-emerald-100" />
+          <div class="absolute bottom-0 right-0 w-5 h-5 bg-emerald-500 rounded-full border-2 border-white"></div>
+        </div>
+        <h2 class="text-xl font-bold text-emerald-800">Admin Name</h2>
+        <p class="text-sm text-emerald-600">Admin Panel</p>
+      </div>
+      <div class="mt-8 space-y-2">
+        <a href="https://site-guardian-api-h7dahee9e3cbc4bc.uksouth-01.azurewebsites.net" class="block py-2 px-4 sidebar-link active text-emerald-700">
+          <i class="fas fa-tachometer-alt mr-3"></i> Dashboard
+        </a>
+        <a href="../static/workers.html" class="block py-2 px-4 sidebar-link text-emerald-700">
+          <i class="fas fa-users mr-3"></i> Manage Workers
+        </a>
+        <a href="../static/records.html" class="block py-2 px-4 sidebar-link text-emerald-700">
+          <i class="fas fa-hard-hat mr-3"></i> Records
+        </a>
+        <a href="../static/Reports.html" class="block py-2 px-4 sidebar-link text-emerald-700">
+          <i class="fas fa-chart-bar mr-3"></i> Reports
+
+          <a href="../static/live-feed.html" class="block py-2 px-4 sidebar-link text-emerald-700">
+            <i class="fas fa-chart-bar mr-3"></i> Live-feed
+        </a>
+        <a href="../static/setting.html" class="block py-2 px-4 sidebar-link text-emerald-700">
+          <i class="fas fa-cog mr-3"></i> Settings
+        </a>
+      </div>
+      <div class="mt-auto pt-6">
+        <a href="https://site-guardian-api-h7dahee9e3cbc4bc.uksouth-01.azurewebsites.net" class="block py-2 px-4 text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors">
+          <i class="fas fa-sign-out-alt mr-3"></i> Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-4 md:p-8 overflow-y-auto">
+      <!-- Header (Mobile Navbar) -->
+      <div class="flex justify-between items-center md:hidden mb-6">
+        <button onclick="toggleSidebar()" class="flex items-center gap-2 bg-white p-2 rounded-lg shadow">
+          <img src="https://img.icons8.com/ios-filled/50/user-male-circle.png" class="w-6 h-6" />
+          <span class="font-bold text-emerald-700">Menu</span>
+        </button>
+        <div class="flex items-center gap-4">
+          <button class="p-2 rounded-full bg-white shadow">
+            <img src="https://img.icons8.com/ios/50/settings--v1.png" class="w-5 h-5" />
+          </button>
+          <div class="relative">
+            <div class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 font-bold">AN</div>
+            <div class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Page Header -->
+      <div class="flex justify-between items-center mb-8">
+        <div>
+          <h1 class="text-2xl font-bold text-emerald-800">Live Monitoring</h1>
+          <p class="text-sm text-emerald-600">Real-time video feed and sensor data</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="refreshBtn" class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg transition-colors">
+            <i class="fas fa-sync-alt"></i> Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Content Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+       <!-- Video Feed Section -->
+<div class="relative lg:col-span-2 bg-white p-4 rounded-xl shadow-sm border border-emerald-50">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-lg font-semibold text-emerald-800">Live Video Feed</h2>
+    <div class="flex items-center gap-2">
+      <span id="connectionStatus" class="flex items-center gap-1 text-sm px-2 py-1 rounded-full bg-emerald-100 text-emerald-800">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span>Connected</span>
+      </span>
+    </div>
+  </div>
+
+  <div class="video-container relative bg-black rounded-lg overflow-hidden">
+    <img id="liveStream" src="" alt="Live Stream" class="hidden w-full h-auto" />
+    <img id="videoPlaceholder" src="https://img.icons8.com/ios/500/no-camera--v1.png" alt="Camera Feed" class="opacity-20 p-16 w-full h-auto" />
+
+    <!-- CSS Fullscreen Icon -->
+    <button id="fullscreenBtn" class="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-md hover:bg-gray-200 transition">
+      <div class="w-4 h-4 relative">
+        <!-- Top Left Corner -->
+        <span class="absolute top-0 left-0 w-2 h-0.5 bg-gray-700"></span>
+        <span class="absolute top-0 left-0 w-0.5 h-2 bg-gray-700"></span>
+        <!-- Top Right Corner -->
+        <span class="absolute top-0 right-0 w-2 h-0.5 bg-gray-700"></span>
+        <span class="absolute top-0 right-0 w-0.5 h-2 bg-gray-700"></span>
+        <!-- Bottom Left Corner -->
+        <span class="absolute bottom-0 left-0 w-2 h-0.5 bg-gray-700"></span>
+        <span class="absolute bottom-0 left-0 w-0.5 h-2 bg-gray-700"></span>
+        <!-- Bottom Right Corner -->
+        <span class="absolute bottom-0 right-0 w-2 h-0.5 bg-gray-700"></span>
+        <span class="absolute bottom-0 right-0 w-0.5 h-2 bg-gray-700"></span>
+      </div>
+    </button>
+
+    <!-- Timestamp (bottom right) -->
+    <div id="timestamp" class="absolute bottom-2 right-4 text-sm text-gray-300 bg-black/40 px-2 py-1 rounded">
+      <!-- JS will update this -->
+    </div>
+  </div>
+</div>
+
+<!-- Live Time Script -->
+<script>
+  function updateTimestamp() {
+    const timestampEl = document.getElementById("timestamp");
+    const now = new Date();
+    const formattedTime = now.toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+    timestampEl.textContent = formattedTime;
+  }
+
+  setInterval(updateTimestamp, 1000);
+  updateTimestamp();
+</script>
+
+        
+        <!-- Sensor Data Section -->
+        <div class="space-y-6">
+          <!-- PPE 
+          <div id="ppeStatusCard" class="ppe-status bg-white p-4 rounded-xl shadow-sm border border-emerald-50">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-lg font-semibold text-emerald-800">PPE Compliance</h2>
+              <span id="ppeComplianceStatus" class="text-sm px-2 py-1 rounded-full bg-emerald-100 text-emerald-800">Checking...</span>
+            </div>
+            
+            <div class="space-y-3">
+              <div class="flex justify-between items-center">
+                <span class="text-sm font-medium">Helmet</span>
+                <span id="helmetStatus" class="flex items-center gap-1">
+                  <span class="text-sm text-gray-500">Checking...</span>
+                </span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm font-medium">Vest</span>
+                <span id="vestStatus" class="flex items-center gap-1">
+                  <span class="text-sm text-gray-500">Checking...</span>
+                </span>
+              </div>
+            </div>
+            
+            <div id="ppeMessage" class="mt-4 p-3 rounded-lg text-sm hidden"></div>
+          </div>Status Card -->
+          
+          <!-- Alcohol Sensor Card -->
+          <div class="sensor-card bg-white p-4 rounded-xl shadow-sm border border-emerald-50">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-lg font-semibold text-emerald-800">Air Quality Sensor</h2>
+              <span id="alcoholStatus" class="text-sm px-2 py-1 rounded-full bg-emerald-100 text-emerald-800">Active</span>
+            </div>
+            
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm text-emerald-600">Current Reading</p>
+                <h3 id="alcoholValue" class="text-2xl font-bold text-emerald-800">--%</h3>
+              </div>
+              <div class="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-wine-bottle text-emerald-600"></i>
+              </div>
+            </div>
+            
+            <div class="mt-4">
+              <div class="flex justify-between text-xs text-emerald-600 mb-1">
+                <span>0%</span>
+                <span>5%</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2">
+                <div id="alcoholProgress" class="bg-emerald-600 h-2 rounded-full" style="width: 0%"></div>
+              </div>
+            </div>
+            
+            <div id="alcoholMessage" class="mt-3 p-2 rounded-lg text-sm hidden"></div>
+          </div>
+          
+          <!-- Recent Detections -->
+          
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="live-feed.js"></script>
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById("mobileSidebar");
+      sidebar.classList.toggle("hidden");
+    }
+  </script>
+</body>
+</html>

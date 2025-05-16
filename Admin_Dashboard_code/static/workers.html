@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Site Guardian - Workers Management</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    .sidebar-link {
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+    }
+    
+    .sidebar-link:hover {
+      background-color: rgba(5, 150, 105, 0.1);
+      border-left: 3px solid #059669;
+    }
+    
+    .sidebar-link.active {
+      background-color: rgba(5, 150, 105, 0.1);
+      border-left: 3px solid #059669;
+      font-weight: 500;
+    }
+    
+    .worker-table-row:hover {
+      background-color: rgba(5, 150, 105, 0.05);
+    }
+    
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    
+    .modal-overlay {
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+    }
+    
+    .tab-button {
+      transition: all 0.2s ease;
+      border-bottom: 3px solid transparent;
+    }
+    
+    .tab-button.active {
+      border-bottom: 3px solid #059669;
+      color: #059669;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- Mobile Sidebar Overlay -->
+  <div id="mobileSidebar" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden transition-opacity duration-300">
+    <div class="bg-white w-64 h-full p-6 shadow-lg transform transition-transform duration-300">
+      <button onclick="toggleSidebar()" class="text-right block mb-6 text-emerald-600 hover:text-emerald-800 font-bold transition-colors">✕ Close</button>
+      <div class="flex flex-col items-center">
+        <div class="relative">
+          <img src="https://img.icons8.com/ios-filled/100/user-male-circle.png" alt="Profile" class="w-20 h-20 rounded-full mb-4 border-4 border-emerald-100" />
+          <div class="absolute bottom-0 right-0 w-5 h-5 bg-emerald-500 rounded-full border-2 border-white"></div>
+        </div>
+        <h2 class="text-xl font-bold text-emerald-800">Sharad Thing</h2>
+        <p class="text-sm text-emerald-600">Admin Panel</p>
+      </div>
+      <div class="mt-8 space-y-2">
+        <a href="https://site-guardian-api-h7dahee9e3cbc4bc.uksouth-01.azurewebsites.net" class="block py-2 px-4 sidebar-link active text-emerald-700">Dashboard</a>
+        <a href="../static/workers.html" class="block py-2 px-4 sidebar-link text-emerald-700">Manage Workers</a>
+        <a href="../static/records.html" class="block py-2 px-4 sidebar-link text-emerald-700">Records</a>
+        <a href="../static/Reports.html" class="block py-2 px-4 sidebar-link text-emerald-700">Reports</a>
+        <a href="../static/live-feed.html" class="block py-2 px-4 sidebar-link text-emerald-700">Live-feed</a>
+        <a href="../static/setting.html" class="block py-2 px-4 sidebar-link text-emerald-700">Settings</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-col md:flex-row h-screen overflow-y-auto">
+    <!-- Sidebar (Desktop) -->
+    <aside class="hidden md:flex flex-col w-64 bg-white p-6 shadow-lg">
+      <div class="flex flex-col items-center">
+        <div class="relative">
+          <img src="https://img.icons8.com/ios-filled/100/user-male-circle.png" alt="Profile" class="w-20 h-20 rounded-full mb-4 border-4 border-emerald-100" />
+          <div class="absolute bottom-0 right-0 w-5 h-5 bg-emerald-500 rounded-full border-2 border-white"></div>
+        </div>
+        <h2 class="text-xl font-bold text-emerald-800">Admin Name</h2>
+        <p class="text-sm text-emerald-600">Admin Panel</p>
+      </div>
+      <div class="mt-8 space-y-2">
+        <a href="https://site-guardian-api-h7dahee9e3cbc4bc.uksouth-01.azurewebsites.net" class="block py-2 px-4 sidebar-link active text-emerald-700">
+          <i class="fas fa-tachometer-alt mr-3"></i> Dashboard
+        </a>
+        <a href="../static/workers.html" class="block py-2 px-4 sidebar-link text-emerald-700">
+          <i class="fas fa-users mr-3"></i> Manage Workers
+        </a>
+        <a href="../static/records.html" class="block py-2 px-4 sidebar-link text-emerald-700">
+          <i class="fas fa-hard-hat mr-3"></i> Records
+        </a>
+        <a href="../static/Reports.html" class="block py-2 px-4 sidebar-link text-emerald-700">
+          <i class="fas fa-chart-bar mr-3"></i> Reports
+
+          <a href="../static/live-feed.html" class="block py-2 px-4 sidebar-link text-emerald-700">
+            <i class="fas fa-chart-bar mr-3"></i> Live-feed
+        </a>
+        <a href="../static/setting.html" class="block py-2 px-4 sidebar-link text-emerald-700">
+          <i class="fas fa-cog mr-3"></i> Settings
+        </a>
+      </div>
+      <div class="mt-auto pt-6">
+        <a href="https://site-guardian-api-h7dahee9e3cbc4bc.uksouth-01.azurewebsites.net" class="block py-2 px-4 text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors">
+          <i class="fas fa-sign-out-alt mr-3"></i> Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-4 md:p-8 overflow-y-auto">
+      <!-- Header (Mobile Navbar) -->
+      <div class="flex justify-between items-center md:hidden mb-6">
+        <button onclick="toggleSidebar()" class="flex items-center gap-2 bg-white p-2 rounded-lg shadow">
+          <img src="https://img.icons8.com/ios-filled/50/user-male-circle.png" class="w-6 h-6" />
+          <span class="font-bold text-emerald-700">Menu</span>
+        </button>
+        <div class="flex items-center gap-4">
+          <button class="p-2 rounded-full bg-white shadow">
+            <img src="https://img.icons8.com/ios/50/settings--v1.png" class="w-5 h-5" />
+          </button>
+          <div class="relative">
+            <div class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 font-bold">AN</div>
+            <div class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Page Header -->
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <div>
+          <h1 class="text-2xl font-bold text-emerald-800">Workers Management</h1>
+          <p class="text-sm text-emerald-600">Manage all worker profiles and access</p>
+        </div>
+        <button id="addWorkerBtn" class="mt-4 md:mt-0 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+          <i class="fas fa-plus"></i> Add New Worker
+        </button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex border-b border-gray-200 mb-6">
+        <button class="tab-button px-4 py-2 active" data-tab="all-workers">All Workers</button>
+        <button class="tab-button px-4 py-2" data-tab="on-site">On Site</button>
+        <button class="tab-button px-4 py-2" data-tab="off-site">Off Site</button>
+        <button class="tab-button px-4 py-2" data-tab="suspended">Suspended</button>
+      </div>
+
+      <!-- Search and Filter -->
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-emerald-50 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="relative">
+            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+            <input type="text" placeholder="Search workers..." class="pl-10 pr-4 py-2 w-full border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500">
+          </div>
+          <select class="border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500">
+            <option value="">All Job Titles</option>
+            <option value="general">General Worker</option>
+            <option value="supervisor">Supervisor</option>
+            <option value="safety">Safety Officer</option>
+          </select>
+          <select class="border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500">
+            <option value="">All Sites</option>
+            <option value="OLY">Olympic Park Development</option>
+            <option value="CTY">City Center Project</option>
+            <option value="RIV">Riverside Construction</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Workers Table -->
+      <div class="bg-white rounded-xl shadow-sm border border-emerald-50 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-emerald-50">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-emerald-800 uppercase tracking-wider">Worker</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-emerald-800 uppercase tracking-wider">Worker ID</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-emerald-800 uppercase tracking-wider">Job Title</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-emerald-800 uppercase tracking-wider">Site</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-emerald-800 uppercase tracking-wider">Status</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-emerald-800 uppercase tracking-wider">Last Active</th>
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-emerald-800 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200" id="workersTableBody">
+              <!-- Worker rows will be inserted here by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+        <div class="px-6 py-4 bg-white border-t border-gray-200 flex items-center justify-between">
+          <div class="text-sm text-gray-500">
+            Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">247</span> workers
+          </div>
+          <div class="flex space-x-2">
+            <button class="px-3 py-1 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+              Previous
+            </button>
+            <button class="px-3 py-1 rounded-md border border-emerald-500 bg-emerald-50 text-sm font-medium text-emerald-600">
+              1
+            </button>
+            <button class="px-3 py-1 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+              2
+            </button>
+            <button class="px-3 py-1 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+              3
+            </button>
+            <button class="px-3 py-1 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add/Edit Worker Modal -->
+  <div id="workerModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-overlay">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-gray-200 p-4">
+        <h3 class="text-lg font-semibold text-emerald-800" id="modalTitle">Add New Worker</h3>
+        <button id="closeModalBtn" class="text-gray-400 hover:text-gray-500">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <form id="workerForm" class="p-6">
+        <input type="hidden" id="workerId">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Personal Info -->
+          <div class="col-span-2">
+            <h4 class="font-medium text-emerald-700 mb-3 border-b pb-2">Personal Information</h4>
+          </div>
+          <div>
+            <label for="fullName" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+            <input type="text" id="fullName" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500">
+          </div>
+          <div>
+            <label for="dateOfBirth" class="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+            <input type="date" id="dateOfBirth" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500">
+          </div>
+          <div>
+            <label for="jobTitle" class="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+            <select id="jobTitle" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500">
+              <option value="">Select Job Title</option>
+              <option value="General Worker">General Worker</option>
+              <option value="Supervisor">Supervisor</option>
+              <option value="Safety Officer">Safety Officer</option>
+            </select>
+          </div>
+          <div>
+            <label for="gender" class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+            <select id="gender" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500">
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label for="nationality" class="block text-sm font-medium text-gray-700 mb-1">Nationality</label>
+            <input type="text" id="nationality" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500">
+          </div>
+          <div>
+            <label for="bloodGroup" class="block text-sm font-medium text-gray-700 mb-1">Blood Group</label>
+            <select id="bloodGroup" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500">
+              <option value="">Select Blood Group</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
+          </div>
+          
+          <!-- Contact Info -->
+          <div class="col-span-2 mt-4">
+            <h4 class="font-medium text-emerald-700 mb-3 border-b pb-2">Contact Information</h4>
+          </div>
+          <div>
+            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+            <input type="tel" id="phone" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500">
+          </div>
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input type="email" id="email" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500">
+          </div>
+          <div class="col-span-2">
+            <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+            <textarea id="address" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"></textarea>
+          </div>
+          
+          <!-- Emergency Contact -->
+          <div class="col-span-2 mt-4">
+            <h4 class="font-medium text-emerald-700 mb-3 border-b pb-2">Emergency Contact</h4>
+          </div>
+          <div>
+            <label for="emergencyName" class="block text-sm font-medium text-gray-700 mb-1">Contact Name</label>
+            <input type="text" id="emergencyName" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500">
+          </div>
+          <div>
+            <label for="emergencyNumber" class="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
+            <input type="tel" id="emergencyNumber" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500">
+          </div>
+          <div class="col-span-2">
+            <label for="emergencyRelationship" class="block text-sm font-medium text-gray-700 mb-1">Relationship</label>
+            <input type="text" id="emergencyRelationship" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500">
+          </div>
+          
+          <!-- Site Access -->
+          <div class="col-span-2 mt-4">
+            <h4 class="font-medium text-emerald-700 mb-3 border-b pb-2">Site Access</h4>
+          </div>
+          <div>
+            <label for="siteId" class="block text-sm font-medium text-gray-700 mb-1">Site ID</label>
+            <input type="text" id="siteId" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500">
+          </div>
+          <div>
+            <label for="workerIdInput" class="block text-sm font-medium text-gray-700 mb-1">Worker ID</label>
+            <input type="text" id="workerIdInput" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500">
+          </div>
+          <div>
+            <label for="siteName" class="block text-sm font-medium text-gray-700 mb-1">Site Name</label>
+            <select id="siteName" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500">
+              <option value="">Select Site</option>
+              <option value="Olympic Park Development">Olympic Park Development</option>
+              <option value="City Center Project">City Center Project</option>
+              <option value="Riverside Construction">Riverside Construction</option>
+            </select>
+          </div>
+          <div>
+            <label for="workingStatus" class="block text-sm font-medium text-gray-700 mb-1">Working Status</label>
+            <select id="workingStatus" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500">
+              <option value="on">Active</option>
+              <option value="off">Inactive</option>
+              <option value="suspended">Suspended</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="mt-6 flex justify-end gap-3">
+          <button type="button" id="cancelWorkerBtn" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
+            Save Worker
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-overlay">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md">
+      <div class="p-6 text-center">
+        <i class="fas fa-exclamation-triangle text-3xl text-yellow-500 mb-4"></i>
+        <h3 class="text-lg font-medium text-gray-900 mb-2" id="confirmTitle">Confirm Action</h3>
+        <p class="text-sm text-gray-500 mb-6" id="confirmMessage">Are you sure you want to perform this action?</p>
+        <div class="flex justify-center gap-3">
+          <button type="button" id="confirmCancel" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
+            Cancel
+          </button>
+          <button type="button" id="confirmAction" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="workers.js"></script>
+  <script>
+    // Add Font Awesome icons
+    const faScript = document.createElement('script');
+    faScript.src = 'https://kit.fontawesome.com/a076d05399.js';
+    document.head.appendChild(faScript);
+    
+    function toggleSidebar() {
+      const sidebar = document.getElementById("mobileSidebar");
+      sidebar.classList.toggle("hidden");
+    }
+  </script>
+</body>
+</html>

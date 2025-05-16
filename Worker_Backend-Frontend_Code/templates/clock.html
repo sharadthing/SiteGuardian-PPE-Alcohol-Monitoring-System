@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clock Actions | Site Guardian</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+    <button class="back-btn" onclick="window.history.back()">
+        &larr; Back
+    </button>
+
+    <div class="container">
+        <h1>Welcome, <span id="workerName"></span>!</h1>
+        <div class="clock-buttons">
+            <button class="clock-btn clockin-btn" onclick="handleClockEvent('clock-in')">
+                <span class="btn-icon"></span> Clock In
+            </button>
+            <button class="clock-btn clockout-btn" onclick="handleClockEvent('clock-out')">
+                <span class="btn-icon"></span> Clock Out
+            </button>
+        </div>
+        <div class="status-indicator" id="statusMessage"></div>
+    </div>
+
+    <script>
+        // grab worker info from URL query params
+        const urlParams = new URLSearchParams(window.location.search);
+        const workerId = urlParams.get('worker_id');
+        const workerName = decodeURIComponent(urlParams.get('name'));
+
+        // inject name into the UI
+        document.getElementById('workerName').textContent = workerName;
+
+        // fetch and update current clock-in status
+        updateStatusMessage();
+
+        async function updateStatusMessage() {
+            try {
+                const response = await fetch(`/worker/${workerId}/status`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const status = data.data.working_status;
+                    const statusElement = document.getElementById('statusMessage');
+                    statusElement.textContent = `Current status: ${status === 'on' ? 'Clocked In' : 'Clocked Out'}`;
+                    statusElement.style.color = status === 'on' ? 'var(--success)' : 'var(--danger)';
+                }
+            } catch (error) {
+                console.error("Error fetching status:", error);
+            }
+        }
+
+        async function handleClockEvent(eventType) {
+            try {
+                const response = await fetch('/clock', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        worker_id: workerId,
+                        event_type: eventType
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    if (eventType === 'clock-in') {
+                        // reset PPE status in backend before new scan
+                        await fetch('/reset_ppe');
+
+                        // move to scan page
+                        window.location.href = `/scan?worker_id=${workerId}`;
+                    } else {
+                        // if clocking out, just show success and reload UI
+                        alert(`${eventType.replace('-', ' ')} successful!`);
+                        window.location.reload();
+                    }
+                } else {
+                    alert(data.message || "Operation failed");
+                }
+            } catch (error) {
+                alert("Error connecting to server");
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alcohol Level Monitor</title>
+   <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Alcohol Level Monitor</h1>
+        <div id="valueDisplay" class="value-display normal">--.--%</div>
+        <div id="status" class="status">Connecting...</div>
+        <div id="error" class="error"></div>
+    </div>
+    <button class="next-btn" onclick="handleNextWorker()">Next Worker</button>
+
+    <script>
+        const valueDisplay = document.getElementById('valueDisplay');
+        const statusDisplay = document.getElementById('status');
+        const errorDisplay = document.getElementById('error');
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
+        const reconnectDelay = 2000;
+        let ledState = null;
+        let redTriggered = false; // remember if red LED was ever triggered
+        let eventSource = null;
+
+        function updateDisplay(value) {
+            valueDisplay.textContent = `${value}%`;
+            const numValue = parseFloat(value);
+            valueDisplay.className = 'value-display';
+
+            if (numValue < 2) {
+                valueDisplay.classList.add('normal');
+                statusDisplay.textContent = 'Please! Blow on sensor';
+            } else if (numValue < 8) {
+                valueDisplay.classList.add('warning');
+                statusDisplay.textContent = 'Please! Blow on harder';
+            } else if (numValue >= 8 && numValue < 20) {
+                valueDisplay.classList.add('normal');
+                statusDisplay.textContent = 'No Alcohol detected';
+
+                // only allow green LED if red hasn't been triggered before
+                if (!redTriggered && ledState !== 'green') {
+                    callEndpoint('green');
+                    ledState = 'green';
+                }
+            } else {
+                valueDisplay.classList.add('danger');
+                statusDisplay.textContent = 'DANGER: High alcohol level!';
+
+                // once red is triggered, lock it to prevent switching back to green
+                if (ledState !== 'red') {
+                    callEndpoint('red');
+                    ledState = 'red';
+                    redTriggered = true;
+                }
+            }
+        }
+
+        function callEndpoint(color) {
+            // tell the Raspberry Pi to set LED to the right color
+            fetch(`http://192.168.0.30:5000/set_led/${color}`)
+                .catch(error => console.error(`Error setting LED to ${color}:`, error));
+        }
+
+        function handleError(error) {
+            console.error('Error:', error);
+            errorDisplay.textContent = `Error: ${error.message}`;
+            statusDisplay.textContent = 'Connection problem';
+            valueDisplay.className = 'value-display';
+            valueDisplay.textContent = '--.--%';
+
+            // try to reconnect if the sensor stream fails
+            if (reconnectAttempts < maxReconnectAttempts) {
+                reconnectAttempts++;
+                statusDisplay.textContent = `Reconnecting (attempt ${reconnectAttempts}/${maxReconnectAttempts})...`;
+                setTimeout(connectToSource, reconnectDelay);
+            } else {
+                statusDisplay.textContent = 'Connection failed. Please refresh the page.';
+            }
+        }
+
+        function connectToSource() {
+            errorDisplay.textContent = '';
+            statusDisplay.textContent = 'Connecting...';
+
+            // open an EventSource stream to Flask backend for alcohol data
+            eventSource = new EventSource('http://192.168.0.30:5000/alcohol_trigger');
+
+            eventSource.onopen = () => {
+                console.log('Connection opened');
+                reconnectAttempts = 0;
+                statusDisplay.textContent = 'Connected, waiting for data...';
+            };
+
+            eventSource.onmessage = (event) => {
+                // try parsing alcohol value from the incoming message
+                const match = event.data.match(/Alcohol: ([\d.]+)%/);
+                if (match && match[1]) {
+                    updateDisplay(match[1]);
+                } else {
+                    const simpleMatch = event.data.match(/[\d.]+/);
+                    if (simpleMatch) {
+                        updateDisplay(simpleMatch[0]);
+                    }
+                }
+            };
+
+            eventSource.onerror = (error) => {
+                // something went wrong, close connection and try to recover
+                eventSource.close();
+                handleError(new Error('Connection error'));
+            };
+        }
+
+        function handleNextWorker() {
+            // make sure the current connection is closed before moving to the next worker
+            if (eventSource) {
+                eventSource.close();
+                console.log("EventSource connection closed for next worker");
+            }
+
+            // reset the LED to blue before redirecting
+            fetch('http://192.168.0.30:5000/set_led/blue')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to set LED color to blue');
+                    }
+                    // go back to home or next step
+                    window.location.href = '/';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to set LED color. Please try again.');
+                });
+        }
+
+        // auto-start monitoring when the page loads
+        connectToSource();
+
+        // cleanup connection if user reloads or closes the page
+        window.addEventListener('beforeunload', () => {
+            if (eventSource) {
+                eventSource.close();
+                console.log("EventSource closed on unload");
+            }
+        });
+    </script>
+</body>
+</html>

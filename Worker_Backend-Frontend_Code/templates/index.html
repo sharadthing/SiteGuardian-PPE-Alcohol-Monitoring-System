@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Site-Guardian</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Site-Guardian</h1>
+        <form id="mainForm">
+            <div class="form-group">
+                <label for="worker_id">Enter Your 4-Digit ID:</label>
+                <input type="text" id="worker_id" name="worker_id" 
+                       pattern="\d{4}" maxlength="4" required
+                       title="Please enter a 4-digit number" readonly>
+            </div>
+            
+            <div class="top-buttons">
+                <button type="button" class="icon-btn call-btn" onclick="callSupport()">Call</button>
+                <button type="button" class="icon-btn help-btn" onclick="showHelp()">Help</button>
+            </div>
+            
+            <div class="numpad">
+                <button type="button" class="numpad-btn" onclick="appendNumber('1')">1</button>
+                <button type="button" class="numpad-btn" onclick="appendNumber('2')">2</button>
+                <button type="button" class="numpad-btn" onclick="appendNumber('3')">3</button>
+                
+                <button type="button" class="numpad-btn" onclick="appendNumber('4')">4</button>
+                <button type="button" class="numpad-btn" onclick="appendNumber('5')">5</button>
+                <button type="button" class="numpad-btn" onclick="appendNumber('6')">6</button>
+                
+                <button type="button" class="numpad-btn" onclick="appendNumber('7')">7</button>
+                <button type="button" class="numpad-btn" onclick="appendNumber('8')">8</button>
+                <button type="button" class="numpad-btn" onclick="appendNumber('9')">9</button>
+                
+                <button type="button" class="numpad-btn clear-btn" onclick="clearInput()">C</button>
+                <button type="button" class="numpad-btn" onclick="appendNumber('0')">0</button>
+                <button type="button" class="numpad-btn ok-btn" onclick="verifyWorker()">OK</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function appendNumber(num) {
+            const input = document.getElementById('worker_id');
+            if (input.value.length < 4) {
+                input.value += num;
+            }
+        }
+        
+        function clearInput() {
+            document.getElementById('worker_id').value = '';
+        }
+        
+        function callSupport() {
+            alert("Calling support...\n\nDial 03-100 NOW for immediate assistance.");
+        }
+        
+        function showHelp() {
+            alert("Help Guide:\n\n" +
+                  "1. Enter your 4-digit ID\n" +
+                  "2. Press 'OK' to submit\n" +
+                  "3. Press 'C' to clear\n" +
+                  "4. Tap Call for emergency calls\n" +
+                  "5. Press 'Help' to see this guide");
+        }
+
+        async function verifyWorker() {
+    const workerId = document.getElementById('worker_id').value;
+    if (workerId.length !== 4) {
+        alert("Please enter a valid 4-digit ID");
+        return;
+    }
+
+    try {
+        const response = await fetch(`/worker/${workerId}/status`);
+        const data = await response.json();
+        
+        if (data.success) {
+            // Redirects with query parameters
+            window.location.href = `/clock?worker_id=${workerId}&name=${encodeURIComponent(data.data.full_name)}`;
+        } else {
+            alert(data.message || "Worker not found");
+        }
+    } catch (error) {
+        alert("Error connecting to server");
+        console.error(error);
+    }
+}
+    </script>
+</body>
+</html>

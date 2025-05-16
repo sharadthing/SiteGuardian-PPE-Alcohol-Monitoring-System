@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PPE Check Successful</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="success-box">
+        <h1>PPE Check Successful!</h1>
+        <p>All required safety equipment has been detected.</p>
+        <p>Worker ID: <span id="worker-id"></span></p>
+        <button class="next-btn" onclick="handleAlcoholTest()">Alcohol Test</button>
+    </div>
+
+    <script>
+        // Gets worker ID from URL if needed
+        const urlParams = new URLSearchParams(window.location.search);
+        const workerId = urlParams.get('worker_id');
+        if (workerId) {
+            document.getElementById('worker-id').textContent = workerId;
+        }
+
+        function handleAlcoholTest() {
+        // Calls the endpoint to set the LED color to blue
+        fetch('http://192.168.0.30:5000/set_led/blue')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to set LED color to blue');
+                }
+                // Redirects to the alcohol test page after successfully setting the LED color
+                window.location.href = '/alcohol';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to set LED color. Please try again.');
+            });
+        }
+    </script>
+</body>
+</html>

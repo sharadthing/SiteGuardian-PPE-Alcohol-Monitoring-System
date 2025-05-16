@@ -1,0 +1,56 @@
+from pymongo import MongoClient
+
+#from azure.storage.blob import BlobServiceClient, ContainerClient
+
+def get_mongo_client():
+    try:
+        client = MongoClient('mongodb://localhost:27017/')
+        db = client['com668_siteguardian']
+        accesscodes_collection = db['Accesscodes']
+        admin_collection = db['Admin']
+        workers_collection = db['Workers']
+        return {
+            "Accesscodes": accesscodes_collection,
+            "Admin": admin_collection,
+            "Workers": workers_collection
+        }
+    except Exception as e:
+        print(f"Error connecting to MongoDB: {str(e)}")
+        return None
+
+
+
+
+
+
+
+
+'''
+# MongoDB connection
+def get_mongo_client(uri):
+    try:
+        client = MongoClient(uri)
+        db = client['cosmosdb-mongodb-v1']
+        accesscodes_collection = db['Accesscodes']
+        admin_collection = db['Admin']
+        workers_collection = db['Workers']
+        return {
+            "Accesscodes": accesscodes_collection,
+            "Admin": admin_collection,
+            "Workers": workers_collection
+        }
+    except Exception as e:
+        print(f"Error connecting to MongoDB: {str(e)}")
+        return None
+    
+
+
+# Blob Storage connection
+def get_blob_container_client(connection_string, container_name):
+    try:
+        blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+        container_client = blob_service_client.get_container_client(container_name)
+        return container_client
+    except Exception as e:
+        print(f"Error connecting to Blob Storage: {str(e)}")
+        return None '''
