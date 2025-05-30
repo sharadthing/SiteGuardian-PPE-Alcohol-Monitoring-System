@@ -1,5 +1,4 @@
 # SiteGuardian - PPE & Alcohol Monitoring System
-Demonstration Video Link: https://gold-definite-echidna-566.mypinata.cloud/ipfs/bafybeic7x2z2lx6cn37yww4xbfkitedkwf4iho4aqqxgv72qknzktmmw6y
 
 ![Overview](https://github.com/sharadthing/SiteGuardian-PPE-Alcohol-Monitoring-System/blob/main/Admin_Dashboard_code/static/images/Screenshot%202025-05-23%20at%2000.20.58.png)
 
@@ -134,7 +133,7 @@ Alcohol monitoring (/api/alcohol)
 Clock events (/api/clock)
 
 See API_DOCS.md for detailed documentation.
-
+![Data Cleaning](https://github.com/sharadthing/SiteGuardian-PPE-Alcohol-Monitoring-System/blob/main/my_Trained_Model/runs/segment/train/train_batch1.jpg)
 License
 MIT License - See LICENSE for details.
 
@@ -143,4 +142,6 @@ Contributions are welcome! Please open an issue or pull request for any improvem
 
 
 
-![Data Cleaning](https://github.com/sharadthing/SiteGuardian-PPE-Alcohol-Monitoring-System/blob/main/my_Trained_Model/runs/segment/train/train_batch1.jpg)
+
+Demonstration Video Link: https://gold-definite-echidna-566.mypinata.cloud/ipfs/bafybeic7x2z2lx6cn37yww4xbfkitedkwf4iho4aqqxgv72qknzktmmw6y
+
