@@ -3,7 +3,7 @@
 Demonstration Video Link: https://gold-definite-echidna-566.mypinata.cloud/ipfs/bafybeic7x2z2lx6cn37yww4xbfkitedkwf4iho4aqqxgv72qknzktmmw6y
 
 
-![site-guardian](https://github.com/sharadthing/Decoding-customer-sentiment-on-restaurant-reviews-using-R/blob/main/images/powerpoint_1.png](https://github.com/sharadthing/SiteGuardian-PPE-Alcohol-Monitoring-System/blob/main/my_Trained_Model/runs/segment/train/train_batch1540.jpg)
+![Data Cleaning](https://github.com/sharadthing/SiteGuardian-PPE-Alcohol-Monitoring-System/blob/main/my_Trained_Model/runs/segment/train/train_batch1.jpg)
 
 [System Overview]
 
