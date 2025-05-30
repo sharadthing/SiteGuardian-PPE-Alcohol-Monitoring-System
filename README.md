@@ -1,7 +1,5 @@
 # SiteGuardian - PPE & Alcohol Monitoring System
 
-Demonstration Video Link: https://gold-definite-echidna-566.mypinata.cloud/ipfs/bafybeic7x2z2lx6cn37yww4xbfkitedkwf4iho4aqqxgv72qknzktmmw6y
-
 
 ![Data Cleaning](https://github.com/sharadthing/SiteGuardian-PPE-Alcohol-Monitoring-System/blob/main/my_Trained_Model/runs/segment/train/train_batch1.jpg)
 
@@ -142,3 +140,7 @@ MIT License - See LICENSE for details.
 
 Contributing
 Contributions are welcome! Please open an issue or pull request for any improvements.
+
+Demonstration Video Link: https://gold-definite-echidna-566.mypinata.cloud/ipfs/bafybeic7x2z2lx6cn37yww4xbfkitedkwf4iho4aqqxgv72qknzktmmw6y
+
+
