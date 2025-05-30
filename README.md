@@ -2,6 +2,8 @@
 
 Demonstration Video Link: https://gold-definite-echidna-566.mypinata.cloud/ipfs/bafybeic7x2z2lx6cn37yww4xbfkitedkwf4iho4aqqxgv72qknzktmmw6y
 
+https://github.com/sharadthing/SiteGuardian-PPE-Alcohol-Monitoring-System/blob/main/my_Trained_Model/runs/segment/train/train_batch1540.jpg
+
 [System Overview]
 
 A comprehensive safety monitoring system for industrial/construction sites that combines:
