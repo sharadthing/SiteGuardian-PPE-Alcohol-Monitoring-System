@@ -143,5 +143,5 @@ Contributions are welcome! Please open an issue or pull request for any improvem
 
 
 
-Demonstration Video Link: https://gold-definite-echidna-566.mypinata.cloud/ipfs/bafybeic7x2z2lx6cn37yww4xbfkitedkwf4iho4aqqxgv72qknzktmmw6y
+Demonstration Video Link: https://www.youtube.com/watch?v=WZMf_Z6mCcA
 
